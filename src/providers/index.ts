@@ -1,15 +1,17 @@
 import { FC, ReactElement } from 'react'
 import combineProviders from '@/utils/combineProvider'
-import { ReactFlowProvider } from 'react-flow-renderer';
 import { CollapseProvider } from '@/contexts/collapsed/CollapsedContext'
+import { DnDProvider } from '@/contexts/dragADrop/DragAndDropContext';
+import { ReactFlowProvider } from '@xyflow/react';
 
 interface IProvider {
   children: ReactElement
 }
 
 const providers: FC<any>[] = [
-  CollapseProvider,
   ReactFlowProvider,
+  CollapseProvider,
+  DnDProvider,
 ]
 
 const Providers: FC<IProvider> = ({ children }) => {
