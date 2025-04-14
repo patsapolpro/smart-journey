@@ -1,9 +1,10 @@
 import { useDnD } from "@/contexts/dragADrop/DragAndDropContext";
+import { NodeType } from "@/nodes/Nodes";
 
 const NodeSider = () => {
   const [_, setType] = useDnD();
  
-  const onDragStart = (event: React.DragEvent<HTMLDivElement>, nodeType: string) => {
+  const onDragStart = (event: React.DragEvent<HTMLDivElement>, nodeType: NodeType) => {
     setType(nodeType);
     event.dataTransfer.effectAllowed = 'move';
   };

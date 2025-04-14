@@ -1,31 +1,33 @@
-import { useCallback } from 'react';
-import {
-  ReactFlow,
+import { useCallback, useRef, useState } from 'react';
+import ReactFlow, {
   Background,
   Controls,
   addEdge,
   useNodesState,
   useEdgesState,
-  useReactFlow,
   Edge,
   Connection,
-} from '@xyflow/react';
+  MiniMap,
+  OnInit,
+} from 'react-flow-renderer';
 
 import '@xyflow/react/dist/style.css';
 
-import { initialNodes } from '@/nodes';
-import { initialEdges } from '@/edges';
+import Nodes from '@/nodes/Nodes';
 import { useDnD } from '@/contexts/dragADrop/DragAndDropContext';
+import NodeSider from '@/components/node-sider/NoteSider';
+import { message } from 'antd';
 import { AppNode } from '@/nodes/types';
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
 const MainFlow = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const { screenToFlowPosition } = useReactFlow();
-  const [type, setType] = useDnD();
+  const reactFlowWrapper = useRef<any>(null);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+  const [type] = useDnD();
 
   const onConnect = useCallback(
     (params: Edge | Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -41,45 +43,54 @@ const MainFlow = () => {
     (event: React.DragEvent<HTMLDivElement>) => {
       event.preventDefault();
 
-      if (!type) return;
+      const reactFlowBounds = reactFlowWrapper?.current?.getBoundingClientRect();
 
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
+      if (typeof type === 'undefined' || !type) {
+        message.warning('Node type not found!');
+        return;
+      }
+
+      const nodeData = Nodes[type];
+      const position = reactFlowInstance?.project({
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
       });
 
       const newNode: AppNode = {
         id: getId(),
-        type: 'position-logger',
+        type,
         position,
-        data: { label: `${type} node` },
+        data: nodeData,
       };
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [screenToFlowPosition, type]
+    [type]
   );
 
-  const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
-    event.dataTransfer.effectAllowed = 'move';
-  };
-
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      onDrop={onDrop}
-      onDragStart={onDragStart}
-      onDragOver={onDragOver}
-      fitView
-      style={{ backgroundColor: '#F7F9FB' }}
-    >
-      <Controls />
-      <Background />
-    </ReactFlow>
+    <div className="dndflow">
+      <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onInit={setReactFlowInstance as OnInit<any, any>}
+          fitView
+          style={{ backgroundColor: '#F7F9FB' }}
+        >
+          <Controls />
+          <MiniMap />
+          <Background />
+        </ReactFlow>
+      </div>
+      <NodeSider />
+    </div>
+
   );
 }
 

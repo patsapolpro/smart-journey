@@ -1,11 +1,12 @@
+import { NodeType } from '@/nodes/Nodes';
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from 'react';
 
-type DnDContextType = [string | null, Dispatch<SetStateAction<string | null>>];
+type DnDContextType = [NodeType | null, Dispatch<SetStateAction<NodeType | null>>];
 
 const DnDContext = createContext<DnDContextType | undefined>(undefined);
 
 export const DnDProvider = ({ children }: { children: ReactNode }) => {
-  const [type, setType] = useState<string | null>(null);
+  const [type, setType] = useState<NodeType | null>(null);
   return (
     <DnDContext.Provider value={[type, setType]}>
       {children}
