@@ -10,19 +10,15 @@ const { Header } = Layout;
 
 const HeaderComponent: React.FC = () => {
     const [collapsed, setCollapsed] = [useCollapsed(), useSetCollapsed()];
-    const {
-        token: { colorBgContainer },
-    } = theme.useToken();
-
     const onClickCollapsed = () => {
         setCollapsed(!collapsed)
     }
 
     return (
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header style={{ padding: 0, background: '#001529' }}>
             <Button
                 type="text"
-                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                icon={collapsed ? <MenuUnfoldOutlined style={{ fontSize: '20px', color: '#fff' }} /> : <MenuFoldOutlined style={{ fontSize: '20px', color: '#fff' }} />}
                 onClick={onClickCollapsed}
                 style={{
                     fontSize: '16px',
