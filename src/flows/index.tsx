@@ -1,30 +1,20 @@
 import { useCallback, useRef, useState } from 'react';
-import ReactFlow, {
-  Background,
-  Controls,
-  addEdge,
-  useNodesState,
-  useEdgesState,
-  Edge,
-  Connection,
-  MiniMap,
-  OnInit,
-} from 'react-flow-renderer';
 import '@xyflow/react/dist/style.css';
 
 import Nodes from '@/nodes/Nodes';
 import { useDnD } from '@/contexts/dragADrop/DragAndDropContext';
 import NodeSider from '@/components/node-sider/NoteSider';
 import { message } from 'antd';
-import { AppNode } from '@/nodes/types';
+import { AppEdge, AppNode } from '@/nodes/types';
 import { generateNodeId } from '@/utils/helper';
 import { Layout } from 'antd';
 import { NodeHeader } from '@/components/node-header';
+import { addEdge, Background, Connection, Controls, Edge, MiniMap, OnInit, ReactFlow, useEdgesState, useNodesState } from '@xyflow/react';
 
 const MainFlow = () => {
   const reactFlowWrapper = useRef<any>(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<AppEdge>([]);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   const [visitedEdgeIds, setVisitedEdgeIds] = useState(new Set());
   const [type] = useDnD();
@@ -72,7 +62,7 @@ const MainFlow = () => {
 
   const resetWorkflow = () => {
     console.log('resetWorkflow...')
-    setVisitedEdgeIds(new Set()); 
+    setVisitedEdgeIds(new Set());
     setNodes(nodes.map((n) => ({
       ...n,
       style: {
