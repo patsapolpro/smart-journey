@@ -9,14 +9,14 @@ import { AppEdge, AppNode } from '@/nodes/types';
 import { generateNodeId } from '@/utils/helper';
 import { Layout } from 'antd';
 import { NodeHeader } from '@/components/node-header';
-import { addEdge, Background, Connection, Controls, Edge, MiniMap, OnInit, ReactFlow, useEdgesState, useNodesState } from '@xyflow/react';
+import { addEdge, Background, Connection, Controls, Edge, MiniMap, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
 
 const MainFlow = () => {
   const reactFlowWrapper = useRef<any>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<AppEdge>([]);
-  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   const [visitedEdgeIds, setVisitedEdgeIds] = useState(new Set());
+  const { screenToFlowPosition } = useReactFlow();
   const [type] = useDnD();
 
   const onConnect = useCallback(
@@ -33,17 +33,16 @@ const MainFlow = () => {
     (event: React.DragEvent<HTMLDivElement>) => {
       event.preventDefault();
 
-      const reactFlowBounds = reactFlowWrapper?.current?.getBoundingClientRect();
-
       if (typeof type === 'undefined' || !type) {
         message.warning('Node type not found!');
         return;
       }
 
       const nodeData = Nodes[type];
-      const position = reactFlowInstance?.project({
-        x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top,
+
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
       });
 
       const newNode: AppNode = {
@@ -193,7 +192,6 @@ const MainFlow = () => {
             onConnect={onConnect}
             onDrop={onDrop}
             onDragOver={onDragOver}
-            onInit={setReactFlowInstance as OnInit<any, any>}
             fitView
             style={{ backgroundColor: '#F7F9FB' }}
           >
