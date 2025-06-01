@@ -1,1 +1,1 @@
-export { default as NoteSider } from './NoteSider.tsx'
+export { default as NoteSider } from './NodeSider.tsx'

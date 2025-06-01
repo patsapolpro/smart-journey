@@ -1,9 +1,9 @@
 import { useCallback, useRef, useState } from 'react';
 import '@xyflow/react/dist/style.css';
 
-import Nodes from '@/nodes/Nodes';
+import Nodes, { customNodeTypes } from '@/nodes/Nodes';
 import { useDnD } from '@/contexts/dragADrop/DragAndDropContext';
-import NodeSider from '@/components/node-sider/NoteSider';
+import NodeSider from '@/components/node-sider/NodeSider';
 import { message } from 'antd';
 import { AppEdge, AppNode } from '@/nodes/types';
 import { generateNodeId } from '@/utils/helper';
@@ -187,6 +187,7 @@ const MainFlow = () => {
           <ReactFlow
             nodes={nodes}
             edges={edges}
+            nodeTypes={customNodeTypes}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
